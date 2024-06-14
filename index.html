@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Scores</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div style="display: flex; width: 100%;">
+        <div style="width: 50%; margin-right:20px;">
+            <h3>Football Scores</h3>
+            <table style="width: 100%;" border="2">
+                <thead style="text-align: left">
+                    <tr>
+                        <th>Equipe 1</th>
+                        <th>Score 1</th>
+                        <th>Score 2</th>
+                        <th>Equipe 2</th>
+                        <th>Date match</th>
+                    </tr>
+                </thead>
+                <tbody id="matches">
+                </tbody>
+            </table>
+        </div>
+        <div style="width: 50%; margin-left:20px;">
+            <form id="matchForm">
+                <h3>Ajouter un match</h3>
+                <label>Équipe 1 : <input type="text" name="team1" id="team1" required></label><br><br>
+                <label>Score Équipe 1 : <input type="number" name="score1" id="score1" required></label><br><br>
+                <label>Équipe 2 : <input type="text" id="team2" name="team2" required></label><br><br>
+                <label>Score Équipe 2 : <input type="number" name="score2" id="score2" required></label><br><br>
+                <label>Date du match : <input type="date" id="matchDate" name="matchDate" required></label><br><hr>
+                <button type="submit">Enregistrer</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function loadMatches() {
+                $.ajax({
+                    url: 'client.php?action=loadMatches',
+                    method: 'GET',
+                    success: function(data) {
+                        const matches = JSON.parse(data);
+                        const matchesTable = $('#matches');
+                        matchesTable.empty();
+                        matches.forEach(match => {
+                            const row = `
+                                <tr>
+                                    <td>${match.team1}</td>
+                                    <td>${match.score1}</td>
+                                    <td>${match.score2}</td>
+                                    <td>${match.team2}</td>
+                                    <td>${match.match_date}</td>
+                                </tr>
+                            `;
+                            matchesTable.append(row);
+                        });
+                    }
+                });
+            }
+
+            $('#matchForm').on('submit', function(event) {
+                event.preventDefault();
+                
+                const matchData = {
+                    team1: $('#team1').val(),
+                    score1: $('#score1').val(),
+                    team2: $('#team2').val(),
+                    score2: $('#score2').val(),
+                    matchDate: $('#matchDate').val()
+                };
+            
+                // Convertir matchData en tableau
+                const matchDataArray = [];
+                for (const key in matchData) {
+                    matchDataArray.push(key + '=' + encodeURIComponent(matchData[key]));
+                }
+            
+                $.ajax({
+                    url: 'client.php?action=addMatch',
+                    method: 'POST',
+                    data: matchDataArray.join('&'), // Converti en chaîne de requête URL
+                    success: function(response) {
+                        const result = JSON.parse(response);
+                        if (result.status === 'success') {
+                            loadMatches();
+                            $('#matchForm')[0].reset();
+                        } else {
+                            alert('Error: ' + result.message);
+                        }
+                    }
+                });
+            });
+            loadMatches();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<?xml version ='1.0' encoding ='UTF-8' ?>
+<definitions name="Football"
+			 targetNamespace="urn:Football"
+			 xmlns:typens="urn:Football"
+			 xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+			 xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			 xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/"
+			 xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+			 xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://schemas.xmlsoap.org/wsdl/">
+	<!--type-->
+
+	<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:Football/">
+
+	</xsd:schema>
+	<!--Messages-->
+    <message name='addMatchRequest'>
+        <wsdl:part name="team1" type="xsd:string"/>
+        <wsdl:part name="team2" type="xsd:string"/>
+        <wsdl:part name="score1" type="xsd:int"/>
+        <wsdl:part name="score2" type="xsd:int"/>
+        <wsdl:part name="match_date" type="xsd:date"/>
+    </message>    
+
+	<message name='getMatchesRequest'>
+	</message>
+
+	<message name='addMatchResponse'>
+		<part name='result' type='xsd:int'/>
+	</message>
+
+	<message name='getMatchesResponse'>
+		<part name='result' type='xsd:array'/>
+	</message>
+
+	<!--Port-->
+
+	<portType name='FootballPortType'>
+		<operation name='addMatch'>
+			<input message='typens:addMatchRequest'/>
+			<output message='typens:addMatchResponse'/>
+		</operation>
+		<operation name='getMatches'>
+			<input message='typens:getMatchesRequest'/>
+			<output message='typens:getMatchesResponse'/>
+		</operation>
+
+	</portType>
+
+	<binding name='FootballBinding' type='typens:FootballPortType'>
+		<soap:binding style='rpc' transport='http://schemas.xmlsoap.org/soap/http'/>
+		<operation name='addMatch'>
+			<soap:operation soapAction='urn:xmethods-delayed-quotes#addMatch'/>
+			<input name='addMatchRequest'>
+				<soap:body use='encoded' namespace='urn:xmethods-delayed-calcul'
+						   encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'/>
+			</input>
+			<output name='addMatchResponse'>
+				<soap:body use='encoded' namespace='urn:xmethods-delayed-calcul'
+						   encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'/>
+			</output>
+		</operation>
+		<operation name='getMatches'>
+			<soap:operation soapAction='urn:xmethods-delayed-quotes#getMatches'/>
+			<input name='getMatchesRequest'>
+				<soap:body use='encoded' namespace='urn:xmethods-delayed-calcul'
+						   encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'/>
+			</input>
+			<output name='getMatchesResponse'>
+				<soap:body use='encoded' namespace='urn:xmethods-delayed-calcul'
+						   encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'/>
+			</output>
+		</operation>
+
+	</binding>
+
+	<service name='FootballService'>
+		<port name='FootballPortType' binding='FootballBinding'>
+			<soap:address location='http://localhost/esgis/ajaxCourse/football/function.php'/>
+		</port>
+	</service>
+</definitions>
